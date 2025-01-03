@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Techniques</title>
+    <style>
+        /* General body styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Top Menu Styles */
+        .top-menu {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            border-bottom: 2px solid white;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .top-menu ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 15px;
+        }
+
+        .top-menu ul li {
+            display: inline;
+        }
+
+        .top-menu ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .top-menu ul li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Landing page styles */
+        .landing-page {
+            text-align: center;
+            margin-top: 120px; /* Space below the fixed menu */
+            padding: 20px;
+        }
+
+        .landing-page h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .landing-page p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        /* Techniques List Styles */
+        nav {
+            background-color: #ddd;
+            padding: 20px;
+            border-top: 2px solid white;
+        }
+
+        nav h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav ul li {
+            margin-bottom: 10px;
+        }
+
+        nav ul li a {
+            display: block;
+            padding: 10px;
+            background-color: #fff;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav ul li a:hover {
+            background-color: #ccc;
+            color: #000;
+        }
+
+        /* Main Content Styles */
+        main {
+            padding: 20px;
+        }
+
+        main p {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Menu -->
+    <div class="top-menu">
+        <ul>
+            <li><a href="{{ url_for('homepage') }}">Home</a></li>
+                <li><a href="{{ url_for('crops1') }}">Crops</a></li>
+		<li><a href="{{ url_for('crop_recommendation') }}">Crop Recommender</a></li>
+	        <li><a href="{{ url_for('scheme_list') }}">Schemes</a></li>
+        </ul>
+    </div>
+
+    <!-- Landing Page Section -->
+    <div class="landing-page">
+        <h1>Welcome to Our Techniques Database</h1>
+        <p>Discover various agricultural techniques and make informed decisions to enhance your yield.</p>
+    </div>
+
+    <!-- Techniques List -->
+    <nav>
+        <p>Select a technique to view its details.</p>
+        <h2>Techniques</h2>
+        <ul>
+            {% for name in technique_names %}
+                <li><a href="{{ url_for('technique_detail', technique_name=name) }}">{{ name }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+</body>
+</html>

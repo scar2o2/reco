@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Recommendation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700,800,900');
+
+        html, body {
+          height: 100%;
+          margin: 0;
+          font-family: 'Poppins', sans-serif;
+          font-weight: 300;
+          font-size: 15px;
+          line-height: 1.7;
+          color: #c4c3ca;
+          background-color: #1f2029;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: center;
+          overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #ffeba7;
+            border-radius: 10px;
+            border: 2px solid #1f2029;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #ffcc80;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #1f2029;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-track-piece {
+            background-color: #1f2029;
+        }
+
+        .navbar {
+          width: 100%;
+          background-color: #1f2029;
+          padding: 10px 0;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+          position: fixed;
+          top: 0;
+          left: 0;
+          z-index: 1000;
+        }
+
+        .navbar ul {
+          list-style: none;
+          display: flex;
+          justify-content: center;
+          margin: 0;
+          padding: 0;
+        }
+
+        .navbar ul li {
+          margin: 0 20px;
+        }
+
+        .navbar ul li a {
+          text-decoration: none;
+          color: #ffeba7;
+          font-size: 18px;
+          font-weight: 500;
+          transition: all 0.3s ease;
+        }
+
+        .navbar ul li a:hover {
+          color: #102770;
+          text-decoration: underline;
+        }
+
+        .login-box {
+          width: 400px;
+          padding: 40px;
+          background: rgba(31, 32, 41, 0.95);
+          box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
+          border-radius: 15px;
+          margin-top: 80px;
+        }
+
+        .login-box h2 {
+          margin-bottom: 30px;
+          color: #ffeba7;
+          text-align: center;
+          font-weight: 600;
+          letter-spacing: 1.5px;
+        }
+
+        .login-box h3 {
+          margin-top: 20px;
+          color: #ffeba7;
+          font-size: 14px;
+        }
+
+        .login-box .user-box {
+          position: relative;
+          margin-bottom: 30px;
+        }
+
+        .login-box .user-box input {
+          width: 100%;
+          padding: 10px 0;
+          font-size: 16px;
+          color: #c4c3ca;
+          background: #1f2029;
+          border: none;
+          border-bottom: 1px solid #c4c3ca;
+          outline: none;
+          transition: all 0.3s ease;
+        }
+
+        .login-box .user-box input:focus {
+          border-bottom: 1px solid #ffeba7;
+        }
+
+        .login-box .user-box label {
+          position: absolute;
+          top: 0;
+          left: 0;
+          padding: 10px 0;
+          font-size: 16px;
+          color: #c4c3ca;
+          pointer-events: none;
+          transition: 0.5s;
+        }
+
+        .login-box .user-box input:focus ~ label,
+        .login-box .user-box input:valid ~ label {
+          top: -20px;
+          left: 0;
+          color: #ffeba7;
+          font-size: 12px;
+        }
+
+        /* Custom link styles for recommended and suggested crops */
+        .recommendation a, .suggestions a {
+            color: white; /* Set link color to white */
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .recommendation a:hover, .suggestions a:hover {
+            color: #ffeba7; /* Change color on hover */
+            text-decoration: underline;
+        }
+
+        .button-container {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 20px;
+        }
+
+        button {
+          display: inline-block;
+          padding: 10px 20px;
+          font-size: 16px;
+          text-transform: uppercase;
+          color: #ffeba7;
+          background: transparent;
+          border: 2px solid #ffeba7;
+          border-radius: 5px;
+          cursor: pointer;
+          position: relative;
+          transition: all 0.3s ease-in-out;
+        }
+
+        button:hover {
+          background-color: #ffeba7;
+          color: #102770;
+          box-shadow: 0 4px 10px rgba(255, 235, 167, 0.5);
+          border-color: #ffeba7;
+        }
+
+        ul {
+          list-style-type: none;
+          padding: 0;
+        }
+
+        ul li {
+          color: #c4c3ca;
+          margin: 5px 0;
+        }
+
+        ul li::before {
+          content: "🌾";
+          margin-right: 10px;
+          color: #ffeba7;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <ul>
+            <li><a href="{{ url_for('homepage') }}">Home</a></li>
+                <li><a href="{{ url_for('techniques') }}">Techniques</a></li>
+                <li><a href="{{ url_for('crops1') }}">Crops</a></li>
+	        <li><a href="{{ url_for('scheme_list') }}">Schemes</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="login-box">
+        <h2>Crop Recommendation System</h2>
+        <form method="POST" action="/chome/recommend" id="recommend-form">
+            <h3>Enter the following details:</h3>
+            {% for column in columns %}
+            <div class="user-box">
+                <input type="number" step="0.01" id="{{ column }}" name="{{ column }}" required value="{{ request.form[column] if request.form[column] else '' }}">
+                <label for="{{ column }}">{{ column }}</label>
+            </div>
+            {% endfor %}
+            <div class="button-container">
+                <button type="submit">Recommend Crop</button>
+                <button type="button" onclick="resetForm()">Reset</button>
+            </div>
+        </form>
+
+        {% if recommendation %}
+        <h3>Recommended Crop</h3>
+        <p class="recommendation">
+            <a href="{{ url_for('crop_detail', crop_name=recommendation) }}"><strong>{{ recommendation }}</strong></a>
+        </p>  
+        
+        <h3>Other Suggestions</h3>
+        <ul class="suggestions">
+            {% for crop in suggestions %}
+            <li><a href="{{ url_for('crop_detail', crop_name=crop) }}">{{ crop }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if error %}
+        <p style="color: red;">{{ error }}</p>
+        {% endif %}
+    </div>
+
+    <script>
+        // JavaScript function to reset the form inputs
+        function resetForm() {
+            var form = document.getElementById("recommend-form");
+            var inputs = form.querySelectorAll("input");
+            inputs.forEach(function(input) {
+                input.value = ''; // Clear each input value
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Database</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* General body styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* Top Menu Styles */
+        .top-menu {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            border-bottom: 2px solid white; /* Border added only to the bottom */
+            display: flex;
+            justify-content: flex-start; /* Align items to the left */
+            align-items: center; /* Vertically center the items */
+        }
+
+        .top-menu ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex; /* Display the items in a row */
+            gap: 15px; /* Small gap between items */
+        }
+
+        .top-menu ul li {
+            display: inline;
+        }
+
+        .top-menu ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .top-menu ul li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Landing page styles */
+        .landing-page {
+            text-align: center;
+            margin-top: 100px; /* Space below the fixed menu */
+        }
+
+        .landing-page h1 {
+            font-size: 36px;
+            color: #333;
+        }
+
+        .landing-page p {
+            font-size: 20px;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        /* Main Content Styles */
+        .content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .crop-list {
+            margin-top: 30px;
+        }
+
+        .crop-list a {
+            display: block;
+            padding: 10px;
+            background-color: #ddd;
+            margin: 5px 0;
+            text-decoration: none;
+            color: #333;
+            border-radius: 5px;
+        }
+
+        .crop-list a:hover {
+            background-color: #ccc;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Top Menu -->
+    <div class="top-menu">
+        <ul>
+            <li><a href="{{ url_for('homepage') }}">Home</a></li>
+                <li><a href="{{ url_for('techniques') }}">Techniques</a></li>
+		<li><a href="{{ url_for('crop_recommendation') }}">Crop Recommender</a></li>
+	        <li><a href="{{ url_for('scheme_list') }}">Schemes</a></li>
+        </ul>
+    </div>
+
+    <!-- Landing Page Content -->
+    <div class="landing-page">
+        <h1>Welcome to Our Crop Database</h1>
+        <p>Explore the details of various crops and make informed decisions.</p>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="content">
+        <div class="crop-list">
+            <h2>Crops</h2>
+            {% for name in crop_names %}
+                <a href="{{ url_for('crop_detail', crop_name=name) }}">{{ name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>

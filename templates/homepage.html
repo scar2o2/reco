@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <style>
+        /* General Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #181818; /* Dark Grey background */
+            color: #e0e0e0; /* Light Gray text for readability */
+        }
+
+        /* Header Styling */
+        header {
+            background-color: #111111; /* Darker grey header */
+            color: #e0e0e0; /* Light Gray text */
+            text-align: center;
+            padding: 20px;
+        }
+
+        header h1 {
+            font-size: 36px;
+            margin: 0;
+        }
+
+        /* Main Content Styling */
+        main {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            height: calc(100vh - 140px); /* Subtract header and footer height */
+            text-align: center;
+            padding: 20px;
+            gap: 20px; /* Adds spacing between the cards */
+        }
+
+        /* Card Styling */
+        .card {
+            width: calc(25% - 20px); /* Each card takes up 25% of the container's width minus gap */
+            max-width: 21.875rem;
+            height: 350px; /* Adjusted height to fit content */
+            overflow: hidden;
+            border-radius: 0.625rem;
+            box-shadow: 0.25rem 0.25rem 0.5rem rgba(0, 0, 0, 0.6);
+            background: #333333; /* Dark Gray card background */
+            position: relative; /* Ensures that the content can be positioned inside it */
+            transition: transform 500ms ease-in;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            aspect-ratio: 4 / 3; /* Optional: adjust aspect ratio for better control */
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        /* Card Image Styling */
+        .card__background {
+            object-fit: cover;  /* Ensures the image covers the card */
+            width: 100%;         /* Stretch the image to fill the card's width */
+            height: 100%;        /* Stretch the image to fill the card's height */
+            position: absolute;  /* Position the image inside the card */
+            top: 0;
+            left: 0;
+            z-index: 1; /* Ensure image stays behind the text */
+        }
+
+        /* Card Content Styling */
+        .card__content {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Aligns content to the top */
+            padding: 2rem;
+            height: 100%;
+            background: linear-gradient(
+                180deg,
+                hsla(0, 0%, 0%, 0) 0%,
+                hsla(0, 0%, 0%, 0.3) 10%,
+                hsl(0, 0%, 0%) 100%
+            );
+            position: relative; /* Ensure the content is positioned in front of the image */
+            z-index: 2; /* Brings text content above the image */
+            transform: translateY(62%);
+            transition: transform 500ms ease-out;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .card:hover .card__content {
+            transform: translateY(0);
+        }
+
+        .card__title {
+            font-family: "Montserrat", sans-serif;
+            font-size: 1.5em;
+            color: #e0e0e0; /* Light Gray color for title */
+            position: relative;
+            margin-bottom: 1rem; /* Gap between title and description */
+            text-align: left; /* Left-align the title */
+        }
+
+        .card__description {
+            font-family: "Lato", sans-serif;
+            font-size: 1em;
+            color: #FFD700; /* Gold color for description */
+            margin-bottom: 2rem; /* Gap between description and button */
+            opacity: 0;
+            transition: opacity 500ms ease-in, color 500ms ease-in-out;
+            text-align: left; /* Left-align the description */
+            line-height: 1.5;
+            max-width: 100%; /* Ensures description stays within bounds */
+        }
+
+        .card:hover .card__description {
+            opacity: 1;
+        }
+
+        .card__button {
+            padding: 0.75em 1.6em;
+            font-variant: small-caps;
+            font-weight: bold;
+            border-radius: 0.45em;
+            border: 1px solid #FFD700; /* Gold border */
+            background: none; /* No background color */
+            font-family: "Montserrat", sans-serif;
+            font-size: 1.125rem;
+            color: #FFD700; /* Gold text color */
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 500ms ease-in;
+        }
+
+        .card:hover .card__button {
+            opacity: 1;
+        }
+
+        /* Footer Styling */
+        footer {
+            background-color: #111111; /* Darker gray footer */
+            color: #e0e0e0; /* Light Gray text */
+            text-align: center;
+            padding: 10px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .card {
+                width: calc(33.33% - 20px); /* Adjust for smaller screens */
+            }
+        }
+
+        @media (max-width: 900px) {
+            .card {
+                width: calc(50% - 20px); /* Adjust for even smaller screens */
+            }
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 24px;
+            }
+
+            .card {
+                width: calc(100% - 20px); /* Full width for very small screens */
+                height: 320px; /* Adjust height for mobile view */
+            }
+
+            footer p {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Welcome to the Agriculture Information Portal</h1>
+</header>
+<main>
+    <!-- Card 1: Crops -->
+    <div class="card">
+        <!-- Replace with your image URL -->
+        <img class="card__background" src="{{ url_for('static', filename='images/crops.jpg') }}" alt="Crops Image" />
+        <div class="card__content">
+            <h2 class="card__title">Crops</h2>
+            <p class="card__description">Explore various crops and their information.</p>
+            <button class="card__button" onclick="window.location.href='{{ url_for('crops1') }}'">Explore Crops</button>
+        </div>
+    </div>
+
+    <!-- Card 2: Techniques -->
+    <div class="card">
+        <!-- Replace with your image URL -->
+        <img class="card__background" src="{{ url_for('static', filename='images/techniques.jpg') }}" alt="Techniques Image" />
+        <div class="card__content">
+            <h2 class="card__title">Techniques</h2>
+            <p class="card__description">Learn modern farming techniques and methods.</p>
+            <button class="card__button" onclick="window.location.href='{{ url_for('techniques') }}'">Explore Techniques</button>
+        </div>
+    </div>
+
+    <!-- Card 3: Crop Recommendation -->
+    <div class="card">
+        <!-- Replace with your image URL -->
+        <img class="card__background" src="{{ url_for('static', filename='images/recommendation.jpg') }}" alt="Crop Recommendation Image" />
+        <div class="card__content">
+            <h2 class="card__title">Crop Recommendation</h2>
+            <p class="card__description">Get recommendations on the best crops for your region.</p>
+            <button class="card__button" onclick="window.location.href='{{ url_for('crop_recommendation') }}'">Get Recommendations</button>
+        </div>
+    </div>
+
+    <!-- Card 4: Schemes -->
+    <div class="card">
+        <!-- Replace with your image URL -->
+        <img class="card__background" src="{{ url_for('static', filename='images/schemes.jpg') }}" alt="Schemes Image" />
+        <div class="card__content">
+            <h2 class="card__title">Schemes</h2>
+            <p class="card__description">Discover the latest schemes for farmers and agriculture enthusiasts.</p>
+            <button class="card__button" onclick="window.location.href='{{ url_for('scheme_list') }}'">Explore Schemes</button>
+        </div>
+    </div>
+</main>
+<footer>
+    <p>&copy; 2025 Agriculture Information Portal. All Rights Reserved.</p>
+</footer>
+</body>
+</html>
