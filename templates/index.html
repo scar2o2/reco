@@ -207,10 +207,14 @@
     <!-- Navigation Bar -->
     <nav class="navbar">
         <ul>
-            <li><a href="{{ url_for('homepage') }}">Home</a></li>
-                <li><a href="{{ url_for('techniques') }}">Techniques</a></li>
-                <li><a href="{{ url_for('crops1') }}">Crops</a></li>
-	        <li><a href="{{ url_for('scheme_list') }}">Schemes</a></li>
+             <li><a href="{{ url_for('homepage') }}">Home</a></li>
+            <li><a href="{{ url_for('techniques') }}">Techniques</a></li>
+            <li><a href="{{ url_for('crops1') }}">Crops</a></li>
+	    <li><a href="{{ url_for('scheme_list') }}">Schemes</a></li>
+	    <li><a href="{{ url_for('npk_input') }}">NPK Advisor</a></li>
+	    <li><a href="{{ url_for('disease_list') }}">Diseases</a></li>
+
+
         </ul>
     </nav>
 
@@ -262,3 +266,4 @@
     </script>
 </body>
 </html>
+

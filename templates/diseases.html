@@ -101,7 +101,16 @@
 </head>
 <body>
 
-    
+    <div class="top-menu">
+        <ul>
+             <li><a href="{{ url_for('homepage') }}">Home</a></li>
+            <li><a href="{{ url_for('techniques') }}">Techniques</a></li>
+            <li><a href="{{ url_for('crops1') }}">Crops</a></li>
+            <li><a href="{{ url_for('crop_recommendation') }}">Crop Recommender</a></li>
+	    <li><a href="{{ url_for('scheme_list') }}">Schemes</a></li>
+	    <li><a href="{{ url_for('npk_input') }}">NPK Advisor</a></li>
+        </ul>
+    </div>
     <!-- Landing Page Content -->
     <div class="landing-page">
         <h1>List of Crop Diseases</h1>

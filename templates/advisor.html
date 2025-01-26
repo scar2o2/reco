@@ -23,6 +23,41 @@
             border-radius: 10px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
         }
+	.navbar {
+          width: 100%;
+          background-color: #1f2029;
+          padding: 10px 0;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+          position: fixed;
+          top: 0;
+          left: 0;
+          z-index: 1000;
+        }
+
+        .navbar ul {
+          list-style: none;
+          display: flex;
+          justify-content: center;
+          margin: 0;
+          padding: 0;
+        }
+
+        .navbar ul li {
+          margin: 0 20px;
+        }
+
+        .navbar ul li a {
+          text-decoration: none;
+          color: #ffeba7;
+          font-size: 18px;
+          font-weight: 500;
+          transition: all 0.3s ease;
+        }
+
+        .navbar ul li a:hover {
+          color: #102770;
+          text-decoration: underline;
+        }
         h1 {
             color: #ffeba7;
             text-align: center;
@@ -64,6 +99,18 @@
     </style>
 </head>
 <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <ul>
+             <li><a href="{{ url_for('homepage') }}">Home</a></li>
+            <li><a href="{{ url_for('techniques') }}">Techniques</a></li>
+            <li><a href="{{ url_for('crops1') }}">Crops</a></li>
+            <li><a href="{{ url_for('crop_recommendation') }}">Crop Recommender</a></li>
+	    <li><a href="{{ url_for('scheme_list') }}">Schemes</a></li>
+	    <li><a href="{{ url_for('disease_list') }}">Diseases</a></li>
+
+        </ul>
+    </nav>
     <div class="container">
         <h1>Crop NPK Advisor</h1>
         <form id="advisor-form">
