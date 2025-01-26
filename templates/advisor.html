@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop NPK Advisor</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #1f2029;
+            color: #c4c3ca;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: #2a2c38;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            color: #ffeba7;
+            text-align: center;
+        }
+        form label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        form input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #c4c3ca;
+            border-radius: 5px;
+            background: #1f2029;
+            color: #fff;
+        }
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: #ffeba7;
+            color: #1f2029;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #ffcc80;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #2a2c38;
+            border-left: 5px solid #ffeba7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Crop NPK Advisor</h1>
+        <form id="advisor-form">
+            <label for="crop">Crop Name</label>
+            <input type="text" id="crop" name="crop" placeholder="Enter crop name" required>
+
+            <label for="n">Nitrogen (N)</label>
+            <input type="number" id="n" name="n" placeholder="Enter Nitrogen value" required>
+
+            <label for="p">Phosphorus (P)</label>
+            <input type="number" id="p" name="p" placeholder="Enter Phosphorus value" required>
+
+            <label for="k">Potassium (K)</label>
+            <input type="number" id="k" name="k" placeholder="Enter Potassium value" required>
+
+            <label for="acres">Cultivation Area (in Acres)</label>
+            <input type="number" id="acres" name="acres" placeholder="Enter cultivation area" required>
+
+            <button type="button" id="submit-btn">Get Advice</button>
+        </form>
+
+        <div class="result" id="result" style="display: none;">
+            <h2>Advice</h2>
+            <ul id="advice-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("submit-btn").addEventListener("click", async () => {
+            const crop = document.getElementById("crop").value.trim();
+            const n = parseFloat(document.getElementById("n").value);
+            const p = parseFloat(document.getElementById("p").value);
+            const k = parseFloat(document.getElementById("k").value);
+            const acres = parseFloat(document.getElementById("acres").value);
+
+            if (!crop || isNaN(n) || isNaN(p) || isNaN(k) || isNaN(acres)) {
+                alert("Please fill out all fields correctly!");
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/calculate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ crop, n, p, k, acres })
+                });
+
+                const data = await response.json();
+                const adviceList = document.getElementById("advice-list");
+                adviceList.innerHTML = ""; // Clear previous advice
+
+                if (data.advice) {
+                    data.advice.forEach(item => {
+                        const li = document.createElement("li");
+                        li.textContent = item;
+                        adviceList.appendChild(li);
+                    });
+                }
+
+                document.getElementById("result").style.display = "block";
+            } catch (error) {
+                alert("An error occurred while fetching advice. Please try again.");
+            }
+        });
+    </script>
+</body>
+</html>

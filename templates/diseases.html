@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Diseases</title>
+    <style>
+        /* General body styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* Top Menu Styles */
+        .top-menu {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            border-bottom: 2px solid white; /* Border added only to the bottom */
+            display: flex;
+            justify-content: flex-start; /* Align items to the left */
+            align-items: center; /* Vertically center the items */
+        }
+
+        .top-menu ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex; /* Display the items in a row */
+            gap: 15px; /* Small gap between items */
+        }
+
+        .top-menu ul li {
+            display: inline;
+        }
+
+        .top-menu ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .top-menu ul li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Landing page styles */
+        .landing-page {
+            text-align: center;
+            margin-top: 100px; /* Space below the fixed menu */
+        }
+
+        .landing-page h1 {
+            font-size: 36px;
+            color: #333;
+        }
+
+        .landing-page p {
+            font-size: 20px;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        /* Main Content Styles */
+        .content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .disease-list {
+            margin-top: 30px;
+        }
+
+        .disease-list a {
+            display: block;
+            padding: 10px;
+            background-color: #ddd;
+            margin: 5px 0;
+            text-decoration: none;
+            color: #333;
+            border-radius: 5px;
+        }
+
+        .disease-list a:hover {
+            background-color: #ccc;
+        }
+
+        .no-diseases {
+            font-size: 18px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    
+    <!-- Landing Page Content -->
+    <div class="landing-page">
+        <h1>List of Crop Diseases</h1>
+        <p>Explore the diseases that affect crops and learn about their management.</p>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="content">
+        <div class="disease-list">
+            {% if diseases %}
+            {% for disease in diseases %}
+            <a href="{{ url_for('disease_detail', disease_id=loop.index0) }}">
+                {{ disease['Disease'] }}
+            </a>
+            {% endfor %}
+            {% else %}
+            <p class="no-diseases">No diseases available at the moment.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>

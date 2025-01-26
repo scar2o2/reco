@@ -1,5 +1,5 @@
 import pandas as pd
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import pickle
 import csv
 
@@ -16,7 +16,29 @@ except Exception as e:
     print(f"Error loading datasets or model: {e}")
     crop_data, techniques_data, model, columns = None, None, None, []
 
-# Function to read data from the CSV file and return as a list of dictionaries
+# Function to load crop data dynamically from advice.csv (from flask2)
+def load_crop_data():
+    crop_data = {}
+    try:
+        with open("advice.csv", "r") as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                crop_data[row["Crop"].lower()] = {
+                    "N_min": int(row["N_min"]),
+                    "N_max": int(row["N_max"]),
+                    "P_min": int(row["P_min"]),
+                    "P_max": int(row["P_max"]),
+                    "K_min": int(row["K_min"]),
+                    "K_max": int(row["K_max"]),
+                }
+    except Exception as e:
+        print(f"Error loading advice.csv: {e}")
+    return crop_data
+
+# Load the crop data when the app starts
+CROP_DATABASE = load_crop_data()
+
+# Function to read schemes from CSV and return as a list of dictionaries
 def read_schemes_from_csv():
     schemes = []
     try:
@@ -28,6 +50,18 @@ def read_schemes_from_csv():
     except Exception as e:
         print(f"Error reading schemes.csv: {e}")
     return schemes
+
+# Function to read diseases from CSV
+def read_csv():
+    diseases = []
+    try:
+        with open('diseases.csv', newline='') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                diseases.append(row)
+    except Exception as e:
+        print(f"Error reading diseases.csv: {e}")
+    return diseases
 
 # Homepage route
 @app.route('/')
@@ -71,7 +105,7 @@ def recommend():
 @app.route('/crops')
 def crops1():
     """Display a list of available crops."""
-    crop_names = crop_data['Crop Name'].tolist()  # Ensure column name matches the CSV
+    crop_names = crop_data['Crop Name'].tolist() if crop_data is not None else []
     return render_template('crops.html', crop_names=crop_names)
 
 # Display crop details
@@ -122,11 +156,98 @@ def scheme_detail(scheme_id):
     schemes = read_schemes_from_csv()  # Load schemes dynamically from CSV
     # Find the scheme based on ID
     scheme_info = next((scheme for scheme in schemes if scheme['id'] == scheme_id), None)
-    
     if scheme_info is None:
         return f"Scheme with ID {scheme_id} not found.", 404
-    
     return render_template('scheme_details.html', scheme_info=scheme_info, schemes=schemes)
+
+# Home page showing the list of diseases
+@app.route('/dis')
+def disease_list():
+    """Display the list of diseases."""
+    diseases = read_csv()
+    return render_template('diseases.html', diseases=diseases)
+
+# Dynamic route for each disease
+@app.route('/dis/disease/<int:disease_id>')
+def disease_detail(disease_id):
+    """Display details for a specific disease."""
+    diseases = read_csv()
+    try:
+        disease = diseases[disease_id]
+        return render_template(
+            'disease_details.html',
+            disease=disease,
+            diseases=diseases,
+            current_disease=disease['Disease']
+        )
+    except IndexError:
+        return f"Disease with ID {disease_id} not found.", 404
+
+# Route to handle NPK calculations
+@app.route('/npk')
+def npk_input():
+    """Render the NPK input page."""
+    return render_template('advisor.html')
+
+@app.route('/api/calculate', methods=['POST'])
+def calculate_npk():
+    data = request.json
+    crop = data["crop"].lower()
+    n, p, k = data["n"], data["p"], data["k"]
+    acres = data["acres"]
+
+    if crop not in CROP_DATABASE:
+        return jsonify({
+            "advice": [f"Crop '{crop}' is not in the database. Please choose a valid crop."]
+        })
+
+    crop_data = CROP_DATABASE[crop]
+    advice = []
+
+    # Check NPK values and calculate adjustments based on acreage
+    if n < crop_data["N_min"]:
+        amount = (crop_data["N_min"] - n) * acres
+        advice.append(f"Add {amount} kg of Urea to increase Nitrogen for {acres} acre(s).")
+        advice.append("Mix Urea evenly with the top 6-8 inches of soil and irrigate immediately to prevent nitrogen loss.")
+
+    elif n > crop_data["N_max"]:
+        amount = (n - crop_data["N_max"]) * acres
+        advice.append(f"Reduce Nitrogen by {amount} kg for {acres} acre(s) using controlled-release fertilizers.")
+        advice.append("Apply nitrogen in split doses during the crop's growth stages to avoid excessive buildup.")
+
+    if p < crop_data["P_min"]:
+        amount = (crop_data["P_min"] - p) * acres
+        advice.append(f"Add {amount} kg of Superphosphate for Phosphorus for {acres} acre(s).")
+        advice.append("Incorporate Superphosphate into the soil close to the root zone for better absorption.")
+
+    elif p > crop_data["P_max"]:
+        amount = (p - crop_data["P_max"]) * acres
+        advice.append(f"Reduce Phosphorus by {amount} kg for {acres} acre(s) using phosphate binders.")
+        advice.append("Avoid applying additional phosphorus fertilizers until soil levels stabilize.")
+
+    if k < crop_data["K_min"]:
+        amount = (crop_data["K_min"] - k) * acres
+        advice.append(f"Use {amount} kg of Potash to increase Potassium for {acres} acre(s).")
+        advice.append("Mix Potash thoroughly with the soil and water immediately for better uptake.")
+
+    elif k > crop_data["K_max"]:
+        amount = (k - crop_data["K_max"]) * acres
+        advice.append(f"Reduce Potassium by {amount} kg for {acres} acre(s) using potassium-binding substances.")
+        advice.append("Apply less potassium in subsequent crop cycles to balance the soil.")
+
+    if not advice:
+        advice.append(f"Your soil's NPK values are optimal for {acres} acre(s) of {crop} cultivation.")
+
+    # Append minimum NPK requirements to the advice
+    ideal_ranges = (
+        f"Ideal NPK ranges for {crop.title()} are: "
+        f"N: {crop_data['N_min']}-{crop_data['N_max']}, "
+        f"P: {crop_data['P_min']}-{crop_data['P_max']}, "
+        f"K: {crop_data['K_min']}-{crop_data['K_max']}."
+    )
+    advice.append(ideal_ranges)
+
+    return jsonify({"advice": advice})
 
 if __name__ == "__main__":
     app.run(debug=True)

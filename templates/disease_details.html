@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ disease['Disease'] }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: black;
+        }
+
+        /* Fixed Top Menu Styles */
+        .top-menu {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            border: 2px solid white;
+        }
+
+        .top-menu ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+        }
+
+        .top-menu ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+
+        .top-menu ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .top-menu ul li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 200px;
+            background-color: #333;
+            padding: 20px;
+            position: fixed;
+            height: calc(100% - 50px);
+            top: 50px;
+            left: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            color: white;
+            margin-bottom: 10px;
+            border-bottom: 1px solid white;
+            padding-bottom: 10px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #444;
+        }
+
+        /* Active Link Style */
+        .sidebar a.active {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            border-left: 5px solid gold;
+            padding-left: 10px;
+        }
+
+        /* White Line at the End */
+        .sidebar::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 1px;
+            background-color: white;
+            margin: 10px 0;
+        }
+
+        /* Extra Space at Bottom */
+        .sidebar::before {
+            content: '';
+            display: block;
+            height: 10px;
+        }
+
+        /* Main Content Styles */
+        .content {
+            margin-left: 220px;
+            margin-top: 50px;
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            margin-top: 0;
+        }
+
+        .card {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .card strong {
+            font-weight: bold;
+        }
+
+        a {
+            text-decoration: none;
+            color: blue;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            .top-menu ul li {
+                display: inline-block;
+                margin: 0 10px;
+            }
+
+            .sidebar {
+                width: 150px;
+            }
+
+            .content {
+                margin-left: 160px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .top-menu ul {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 0;
+            }
+
+            .top-menu ul li {
+                margin: 5px 0;
+            }
+
+            .sidebar {
+                width: 100px;
+            }
+
+            .content {
+                margin-left: 110px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Menu -->
+    <div class="top-menu">
+        <ul>
+            <li><a href="{{ url_for('homepage') }}">Home</a></li>
+            <li><a href="{{ url_for('techniques') }}">Techniques</a></li>
+            <li><a href="{{ url_for('crops1') }}">Crops</a></li>
+            <li><a href="{{ url_for('crop_recommendation') }}">Crop Recommender</a></li>
+        </ul>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Diseases</h2>
+        {% for disease in diseases %}
+        <a href="{{ url_for('disease_detail', disease_id=loop.index0) }}" class="{{ 'active' if disease['Disease'] == current_disease else '' }}">
+            {{ disease['Disease'] }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <main>
+            <h1>{{ disease['Disease'] }}</h1>
+            <div class="card">
+                <p><strong>Cause:</strong> {{ disease['Cause'] }}</p>
+                <p><strong>Symptoms:</strong> {{ disease['Symptoms'] }}</p>
+                <p><strong>Crops Affected:</strong> {{ disease['Crops Affected'] }}</p>
+                <p><strong>Effects:</strong> {{ disease['Effects'] }}</p>
+                <p><strong>Prevention:</strong> {{ disease['Prevention'] }}</p>
+                <p><strong>Treatment:</strong> {{ disease['Treatment'] }}</p>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

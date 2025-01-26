@@ -233,9 +233,29 @@
             <button class="card__button" onclick="window.location.href='{{ url_for('scheme_list') }}'">Explore Schemes</button>
         </div>
     </div>
+	
+    <!-- Card 5: Diseases -->
+    <div class="card">
+        <!-- Replace with your image URL -->
+        <img class="card__background" src="{{ url_for('static', filename='images/diseases.jpg') }}" alt="Schemes Image" />
+        <div class="card__content">
+            <h2 class="card__title">Crop Diseases</h2>
+            <p class="card__description">Discover the diseases which affect crop health and growth.</p>
+            <button class="card__button" onclick="window.location.href='{{ url_for('disease_list') }}'">Explore Crop Diseases</button>
+        </div>
+    </div>
+    <!-- Card 6: Advisor -->
+    <div class="card">
+        <!-- Replace with your image URL -->
+        <img class="card__background" src="{{ url_for('static', filename='images/advisor.jpg') }}" alt="Advisor Image" />
+        <div class="card__content">
+            <h2 class="card__title">NPK Advisor</h2>
+            <p class="card__description">Make your soil more compatible with your crop.</p>
+            <button class="card__button" onclick="window.location.href='{{ url_for('npk_input') }}'">Open Advisor</button>
+        </div>
+    </div>
+
+
 </main>
-<footer>
-    <p>&copy; 2025 Agriculture Information Portal. All Rights Reserved.</p>
-</footer>
 </body>
 </html>
