@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AgriPortal</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: 'Helvetica Neue', sans-serif;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .welcome-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: url('agriculture-bg.jpg') no-repeat center center/cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1;
+    }
+
+    .text-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: #fff;
+    }
+
+    .text-content .line-top {
+      font-size: 4rem;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: slideDown 1.2s ease-out forwards;
+      animation-delay: 0.3s;
+    }
+
+    .text-content .line-bottom {
+      font-size: 6rem;
+      font-weight: bold;
+      letter-spacing: 8px;
+      margin-top: 0.5rem;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: slideUp 1.5s ease-out forwards;
+      animation-delay: 1.2s;
+    }
+
+    .text-content p {
+      font-size: 1.4rem;
+      color: #d0ffd0;
+      margin-top: 1.8rem;
+      opacity: 0;
+      animation: fadeIn 1.5s ease-in forwards;
+      animation-delay: 2.8s;
+    }
+
+    .enter-button {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 12px 30px;
+      font-size: 1rem;
+      color: #000;
+      background: #fff;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s ease;
+      opacity: 0;
+      animation: fadeIn 1s ease-in forwards;
+      animation-delay: 4s;
+    }
+
+    .enter-button:hover {
+      background: #aaff00;
+      color: #000;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Glitch Effect */
+    .glitch {
+      position: relative;
+      color: white;
+    }
+
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      color: #0f0;
+      z-index: -1;
+    }
+
+    .glitch::before {
+      animation: glitchTop 2s infinite;
+    }
+
+    .glitch::after {
+      color: #0ff;
+      animation: glitchBottom 2s infinite;
+    }
+
+    @keyframes glitchTop {
+      0% { clip-path: inset(0 0 90% 0); }
+      50% { clip-path: inset(0 0 10% 0); }
+      100% { clip-path: inset(0 0 90% 0); }
+    }
+
+    @keyframes glitchBottom {
+      0% { clip-path: inset(90% 0 0 0); }
+      50% { clip-path: inset(10% 0 0 0); }
+      100% { clip-path: inset(90% 0 0 0); }
+    }
+
+    body.fade-out {
+      opacity: 0;
+      transition: opacity 0.5s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="welcome-container">
+    <div class="overlay"></div>
+    <div class="text-content">
+      <div class="line-top">Welcome To</div>
+      <div class="line-bottom glitch" data-text="AgriPortal">AgriPortal</div>
+      <p>Empowering Agriculture through Knowledge and Insight</p>
+      <a href="{{ url_for('homepage') }}" class="enter-button">Enter the Portal</a>
+    </div>
+  </div>
+
+  <script>
+    const enterBtn = document.querySelector('.enter-button');
+    enterBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.body.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = e.target.href;
+      }, 550);
+    });
+  </script>
+</body>
+</html>

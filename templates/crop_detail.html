@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ crop_name }} Details</title>
     <style>
+        html {
+            box-sizing: border-box;
+        }
+        *, *::before, *::after {
+            box-sizing: inherit;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -12,6 +19,7 @@
             display: flex;
             min-height: 100vh;
             color: black; /* Set font color to black */
+            overflow-x: hidden; /* Prevent initial horizontal scroll */
         }
 
         /* Fixed Top Menu Styles */
@@ -24,29 +32,67 @@
             top: 0;
             left: 0;
             z-index: 1000; /* Ensure it's above other elements */
-            border: 2px solid white;
+            border-bottom: 2px solid white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+            gap: 10px; /* Adjust gap between menu items and button */
         }
 
         .top-menu ul {
             list-style-type: none;
             padding: 0;
             margin: 0;
-            text-align: left; /* Align items to the left */
+            display: flex;
+            gap: 10px; /* Adjust gap between navigation links */
         }
 
         .top-menu ul li {
             display: inline;
-            margin: 0 15px;
+            margin: 0 10px;
         }
 
         .top-menu ul li a {
             color: white;
             text-decoration: none;
-            font-size: 18px;
+            font-size: 16px; /* Slightly smaller font for better fit */
+            padding: 8px 0; /* Adjust vertical padding */
         }
 
         .top-menu ul li a:hover {
             text-decoration: underline;
+        }
+
+        #translate-toggle {
+            background-color: #ffeb3b;
+            color: #000;
+            border: none;
+            padding: 8px 14px; /* Slightly smaller padding */
+            font-weight: bold;
+            border-radius: 12px;
+            font-size: 14px; /* Slightly smaller font */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: auto;
+            margin-right: 10px; /* Adjust right margin */
+        }
+
+        #translate-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 12px #ffeb3b, 0 0 20px #ffd600;
+        }
+
+        #google_translate_element {
+            display: none;
+            position: absolute;
+            top: calc(15px + 40px);
+            right: 10px;
+            z-index: 1001;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         /* Sidebar Styles */
@@ -147,15 +193,24 @@
 
         /* Media Queries for Responsiveness */
         @media (max-width: 768px) {
-            .top-menu ul li {
-                display: inline-block;
-                margin: 0 10px;
+            .top-menu ul {
+                gap: 8px;
             }
-
+            .top-menu ul li {
+                margin: 0 8px;
+            }
+            .top-menu ul li a {
+                font-size: 14px;
+                padding: 6px 0;
+            }
+            #translate-toggle {
+                font-size: 12px;
+                padding: 6px 10px;
+                margin-right: 5px;
+            }
             .sidebar {
                 width: 150px;
             }
-
             .content {
                 margin-left: 160px;
             }
@@ -163,55 +218,60 @@
 
         @media (max-width: 600px) {
             .top-menu ul {
-                display: flex;
                 flex-direction: column;
                 align-items: center;
                 padding: 0;
             }
-
             .top-menu ul li {
+                display: block;
                 margin: 5px 0;
             }
-
-            .sidebar {
-                width: 100px;
+            .top-menu {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
             }
-
+            #translate-toggle {
+                margin-left: 0;
+                margin-right: 0;
+            }
+            .sidebar {
+                width: 120px;
+            }
             .content {
-                margin-left: 110px;
+                margin-left: 130px;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Top Menu -->
+    <div id="google_translate_element"></div>
+
     <div class="top-menu">
         <ul>
-             <li><a href="{{ url_for('homepage') }}">Home</a></li>
+            <li><a href="{{ url_for('homepage') }}">Home</a></li>
             <li><a href="{{ url_for('techniques') }}">Techniques</a></li>
             <li><a href="{{ url_for('crops1') }}">Crops</a></li>
             <li><a href="{{ url_for('crop_recommendation') }}">Crop Recommender</a></li>
-	    <li><a href="{{ url_for('scheme_list') }}">Schemes</a></li>
-	    <li><a href="{{ url_for('npk_input') }}">NPK Advisor</a></li>
-	    <li><a href="{{ url_for('disease_list') }}">Diseases</a></li>
+            <li><a href="{{ url_for('scheme_list') }}">Schemes</a></li>
+            <li><a href="{{ url_for('npk_input') }}">NPK Advisor</a></li>
+            <li><a href="{{ url_for('disease_list') }}">Diseases</a></li>
         </ul>
+        <button id="translate-toggle" onclick="toggleTranslate()">🌐 Translate</button>
     </div>
 
-    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <h2>Crops</h2>
         {% for name in crop_names %}
-            <a href="{{ url_for('crop_detail', crop_name=name) }}" 
+            <a href="{{ url_for('crop_detail', crop_name=name) }}"
                class="{% if name == crop_name %}active{% endif %}">
-               {{ name }}
+                {{ name }}
             </a>
         {% endfor %}
     </div>
 
-    <!-- Main Content -->
     <div class="content">
-        <!-- Crop Details -->
         <main>
             <h1>Details of {{ crop_name }}</h1>
             <div class="card">
@@ -222,15 +282,54 @@
         </main>
     </div>
 
-    <script>
-        // Preserve Scroll Position
-        const sidebar = document.getElementById('sidebar');
-        sidebar.scrollTop = sessionStorage.getItem('sidebarScroll') || 0;
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'as,bn,doi,gu,hi,ks,kn,kok,ma,mai,ml,mr,ne,or,pa,sa,sat,sd,te,ta,ur',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
 
-        window.addEventListener('beforeunload', () => {
-            sessionStorage.setItem('sidebarScroll', sidebar.scrollTop);
+        function toggleTranslate() {
+            const el = document.getElementById("google_translate_element");
+            el.style.display = (el.style.display === "none" || el.style.display === "") ? "block" : "none";
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('selectedLang');
+            if (savedLang) {
+                document.cookie = `googtrans=/en/${savedLang};path=/`;
+            }
+
+            const observer = new MutationObserver(() => {
+                const iframe = document.querySelector('iframe.goog-te-menu-frame');
+                if (iframe) {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    const langButtons = iframeDoc.querySelectorAll('.goog-te-menu2-item span.text');
+                    langButtons.forEach(button => {
+                        button.addEventListener('click', () => {
+                            const langCode = button.closest('tr').getAttribute('value');
+                            localStorage.setItem('selectedLang', langCode);
+                            document.cookie = `googtrans=/en/${langCode};path=/`;
+                        });
+                    });
+                    observer.disconnect();
+                }
+            });
+
+            observer.observe(document.body, { childList: true, subtree: true });
+
+            // Preserve Scroll Position
+            const sidebar = document.getElementById('sidebar');
+            sidebar.scrollTop = sessionStorage.getItem('sidebarScroll') || 0;
+
+            window.addEventListener('beforeunload', () => {
+                sessionStorage.setItem('sidebarScroll', sidebar.scrollTop);
+            });
         });
     </script>
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 </body>
 </html>

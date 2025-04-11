@@ -1,234 +1,331 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ disease['Disease'] }}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            color: black;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ disease['Disease'] }}</title>
+  <style>
+    html {
+      box-sizing: border-box;
+    }
+    *, *::before, *::after {
+      box-sizing: inherit;
+    }
 
-        /* Fixed Top Menu Styles */
-        .top-menu {
-            background-color: #333;
-            color: white;
-            padding: 15px;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            border: 2px solid white;
-        }
+    /* General Styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      color: black;
+      overflow-x: hidden; /* Prevent initial horizontal scroll */
+    }
 
-        .top-menu ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-            text-align: left;
-        }
+    /* Top Menu Styling */
+    .top-menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      background-color: #333;
+      color: white;
+      padding: 15px;
+      width: 100%;
+      border-bottom: 2px solid white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
 
-        .top-menu ul li {
-            display: inline;
-            margin: 0 15px;
-        }
+    .top-menu ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      gap: 10px;
+    }
 
-        .top-menu ul li a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-        }
+    .top-menu ul li {
+      display: inline;
+    }
 
-        .top-menu ul li a:hover {
-            text-decoration: underline;
-        }
+    .top-menu ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      padding: 8px 0;
+    }
 
-        /* Sidebar Styles */
-        .sidebar {
-            width: 200px;
-            background-color: #333;
-            padding: 20px;
-            position: fixed;
-            height: calc(100% - 50px);
-            top: 50px;
-            left: 0;
-            overflow-y: auto;
-        }
+    .top-menu ul li a:hover {
+      text-decoration: underline;
+    }
 
-        .sidebar h2 {
-            color: white;
-            margin-bottom: 10px;
-            border-bottom: 1px solid white;
-            padding-bottom: 10px;
-        }
+    #translate-toggle {
+      background-color: #ffeb3b;
+      color: #000;
+      border: none;
+      padding: 8px 14px;
+      font-weight: bold;
+      border-radius: 12px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-left: auto;
+      margin-right: 10px;
+    }
 
-        .sidebar a {
-            display: block;
-            color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
+    #translate-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 12px #ffeb3b, 0 0 20px #ffd600;
+    }
 
-        .sidebar a:hover {
-            background-color: #444;
-        }
+    #google_translate_element {
+      display: none;
+      position: absolute;
+      top: calc(15px + 40px);
+      right: 10px;
+      z-index: 1001;
+      background-color: #333;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
 
-        /* Active Link Style */
-        .sidebar a.active {
-            background-color: white;
-            color: black;
-            font-weight: bold;
-            border-left: 5px solid gold;
-            padding-left: 10px;
-        }
+    /* Sidebar Styles */
+    .sidebar {
+      width: 200px;
+      background-color: #333;
+      padding: 20px;
+      position: fixed;
+      top: 65px; /* Adjust top to account for the fixed header */
+      left: 0;
+      bottom: 0; /* Extend to the bottom of the viewport */
+      overflow-y: auto;
+      color: white;
+    }
 
-        /* White Line at the End */
-        .sidebar::after {
-            content: '';
-            display: block;
-            width: 100%;
-            height: 1px;
-            background-color: white;
-            margin: 10px 0;
-        }
+    .sidebar h2 {
+      color: white;
+      margin-bottom: 10px;
+      border-bottom: 1px solid white;
+      padding-bottom: 10px;
+    }
 
-        /* Extra Space at Bottom */
-        .sidebar::before {
-            content: '';
-            display: block;
-            height: 10px;
-        }
+    .sidebar a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 10px 15px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
 
-        /* Main Content Styles */
-        .content {
-            margin-left: 220px;
-            margin-top: 50px;
-            padding: 20px;
-            flex-grow: 1;
-        }
+    .sidebar a:hover {
+      background-color: #444;
+    }
 
-        main {
-            padding: 20px;
-        }
+    /* Active Link Style */
+    .sidebar a.active {
+      background-color: white;
+      color: black;
+      font-weight: bold;
+      border-left: 5px solid gold;
+      padding-left: 10px;
+    }
 
-        h1 {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            margin-top: 0;
-        }
+    /* Main Content Styles */
+    .content {
+      margin-left: 220px;
+      margin-top: 70px; /* Increased top margin to be below the header */
+      padding: 20px;
+      flex-grow: 1;
+    }
 
-        .card {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: 0 auto;
-        }
+    main {
+      padding: 20px;
+    }
 
-        .card p {
-            font-size: 18px;
-            margin: 10px 0;
-        }
+    h1 {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      margin-top: 0;
+    }
 
-        .card strong {
-            font-weight: bold;
-        }
+    .card {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      margin: 0 auto;
+    }
 
-        a {
-            text-decoration: none;
-            color: blue;
-        }
+    .card p {
+      font-size: 18px;
+      margin: 10px 0;
+    }
 
-        a:hover {
-            text-decoration: underline;
-        }
+    .card strong {
+      font-weight: bold;
+    }
 
-        /* Media Queries for Responsiveness */
-        @media (max-width: 768px) {
-            .top-menu ul li {
-                display: inline-block;
-                margin: 0 10px;
-            }
+    a {
+      text-decoration: none;
+      color: blue;
+    }
 
-            .sidebar {
-                width: 150px;
-            }
+    a:hover {
+      text-decoration: underline;
+    }
 
-            .content {
-                margin-left: 160px;
-            }
-        }
+    /* Media Queries for Responsiveness */
+    @media (max-width: 768px) {
+      .top-menu ul {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .top-menu ul li {
+        display: block;
+        margin: 5px 0;
+      }
+      .sidebar {
+        width: 150px;
+        top: 100px; /* Adjust for stacked menu */
+      }
+      .content {
+        margin-left: 170px;
+        margin-top: 110px; /* Adjust for stacked menu */
+      }
+    }
 
-        @media (max-width: 600px) {
-            .top-menu ul {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 0;
-            }
-
-            .top-menu ul li {
-                margin: 5px 0;
-            }
-
-            .sidebar {
-                width: 100px;
-            }
-
-            .content {
-                margin-left: 110px;
-            }
-        }
-    </style>
+    @media (max-width: 600px) {
+      .top-menu {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .top-menu ul {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+      .top-menu ul li {
+        margin: 0;
+      }
+      #translate-toggle {
+        margin-left: 0;
+        margin-right: 0;
+      }
+      .sidebar {
+        width: 100px;
+        top: 140px; /* Adjust for stacked menu */
+        padding: 10px;
+      }
+      .sidebar h2 {
+        font-size: 18px;
+        margin-bottom: 5px;
+        padding-bottom: 5px;
+      }
+      .sidebar a {
+        font-size: 14px;
+        padding: 8px 10px;
+      }
+      .content {
+        margin-left: 120px;
+        margin-top: 150px; /* Adjust for stacked menu */
+      }
+      h1 {
+        font-size: 30px;
+      }
+      .card p {
+        font-size: 16px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Top Menu -->
-    <div class="top-menu">
-        <ul>
-              <li><a href="{{ url_for('homepage') }}">Home</a></li>
-            <li><a href="{{ url_for('techniques') }}">Techniques</a></li>
-            <li><a href="{{ url_for('crops1') }}">Crops</a></li>
-            <li><a href="{{ url_for('crop_recommendation') }}">Crop Recommender</a></li>
-	    <li><a href="{{ url_for('scheme_list') }}">Schemes</a></li>
-	    <li><a href="{{ url_for('npk_input') }}">NPK Advisor</a></li>
-	    <li><a href="{{ url_for('disease_list') }}">Diseases</a></li>
-        </ul>
-    </div>
+  <div class="top-menu">
+    <ul>
+      <li><a href="{{ url_for('homepage') }}">Home</a></li>
+      <li><a href="{{ url_for('techniques') }}">Techniques</a></li>
+      <li><a href="{{ url_for('crops1') }}">Crops</a></li>
+      <li><a href="{{ url_for('crop_recommendation') }}">Crop Recommender</a></li>
+      <li><a href="{{ url_for('scheme_list') }}">Schemes</a></li>
+      <li><a href="{{ url_for('npk_input') }}">NPK Advisor</a></li>
+      <li><a href="{{ url_for('disease_list') }}">Diseases</a></li>
+    </ul>
+    <button id="translate-toggle" onclick="toggleTranslate()">🌐 Translate</button>
+    <div id="google_translate_element"></div>
+  </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h2>Diseases</h2>
-        {% for disease in diseases %}
-        <a href="{{ url_for('disease_detail', disease_id=loop.index0) }}" class="{{ 'active' if disease['Disease'] == current_disease else '' }}">
-            {{ disease['Disease'] }}
-        </a>
-        {% endfor %}
-    </div>
+  <div class="sidebar">
+    <h2>Diseases</h2>
+    {% for disease in diseases %}
+    <a href="{{ url_for('disease_detail', disease_id=loop.index0) }}" class="{{ 'active' if disease['Disease'] == current_disease else '' }}">
+      {{ disease['Disease'] }}
+    </a>
+    {% endfor %}
+  </div>
 
-    <!-- Main Content -->
-    <div class="content">
-        <main>
-            <h1>{{ disease['Disease'] }}</h1>
-            <div class="card">
-                <p><strong>Cause:</strong> {{ disease['Cause'] }}</p>
-                <p><strong>Symptoms:</strong> {{ disease['Symptoms'] }}</p>
-                <p><strong>Crops Affected:</strong> {{ disease['Crops Affected'] }}</p>
-                <p><strong>Effects:</strong> {{ disease['Effects'] }}</p>
-                <p><strong>Prevention:</strong> {{ disease['Prevention'] }}</p>
-                <p><strong>Treatment:</strong> {{ disease['Treatment'] }}</p>
-            </div>
-        </main>
-    </div>
+  <div class="content">
+    <main>
+      <h1>{{ disease['Disease'] }}</h1>
+      <div class="card">
+        <p><strong>Cause:</strong> {{ disease['Cause'] }}</p>
+        <p><strong>Symptoms:</strong> {{ disease['Symptoms'] }}</p>
+        <p><strong>Crops Affected:</strong> {{ disease['Crops Affected'] }}</p>
+        <p><strong>Effects:</strong> {{ disease['Effects'] }}</p>
+        <p><strong>Prevention:</strong> {{ disease['Prevention'] }}</p>
+        <p><strong>Treatment:</strong> {{ disease['Treatment'] }}</p>
+      </div>
+    </main>
+  </div>
+
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'as,bn,doi,gu,hi,ks,kn,kok,ma,mai,ml,mr,ne,or,pa,sa,sat,sd,te,ta,ur',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+      }, 'google_translate_element');
+    }
+
+    function toggleTranslate() {
+      const el = document.getElementById("google_translate_element");
+      el.style.display = (el.style.display === "none" || el.style.display === "") ? "block" : "none";
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('selectedLang');
+      if (savedLang) {
+        document.cookie = `googtrans=/en/${savedLang};path=/`;
+      }
+
+      const observer = new MutationObserver(() => {
+        const iframe = document.querySelector('iframe.goog-te-menu-frame');
+        if (iframe) {
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          const langButtons = iframeDoc.querySelectorAll('.goog-te-menu2-item span.text');
+          langButtons.forEach(button => {
+            button.addEventListener('click', () => {
+              const langCode = button.closest('tr').getAttribute('value');
+              localStorage.setItem('selectedLang', langCode);
+              document.cookie = `googtrans=/en/${langCode};path=/`;
+            });
+          });
+          observer.disconnect();
+        }
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+    });
+  </script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

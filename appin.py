@@ -65,15 +65,19 @@ def read_csv():
 
 # Homepage route
 @app.route('/')
+def welc():
+    """Render the homepage."""
+    return render_template('welc.html')
+@app.route('/home')
 def homepage():
     """Render the homepage."""
-    return render_template('homepage.html')
+    return render_template('homepageINT.html')
 
 # Crop recommendation page
 @app.route('/chome')
 def crop_recommendation():
     """Render the crop recommendation input page."""
-    return render_template('index.html', columns=columns)
+    return render_template('recommender.html', columns=columns)
 
 @app.route('/chome/recommend', methods=['POST'])
 def recommend():

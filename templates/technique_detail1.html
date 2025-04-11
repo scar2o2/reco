@@ -1,223 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ technique_name }} Details</title>
-    <style>
-        /* General Styling */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            min-height: 100vh;
-            color: black;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ technique_name }} Details</title>
+  <style>
+    html {
+      box-sizing: border-box;
+    }
+    *, *::before, *::after {
+      box-sizing: inherit;
+    }
 
-        /* Top Menu Styling */
-        header {
-            background-color: #333;
-            color: white;
-            padding: 15px;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            border: 2px solid white;
-        }
+    /* General Styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      min-height: 100vh;
+      color: black;
+      overflow-x: hidden; /* Prevent initial horizontal scroll */
+    }
 
-        header nav ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-        }
+    /* Top Menu Styling */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      background-color: #333;
+      color: white;
+      padding: 15px;
+      width: 100%;
+      border-bottom: 2px solid white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
 
-        header nav ul li {
-            margin: 0 15px;
-        }
+    header nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 10px;
+    }
 
-        header nav ul li a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-        }
+    header nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      padding: 8px 0;
+    }
 
-        header nav ul li a:hover {
-            text-decoration: underline;
-        }
+    header nav ul li a:hover {
+      text-decoration: underline;
+    }
 
-        /* Sidebar Styles */
-        .sidebar {
-            width: 200px;
-            background-color: #333;
-            padding: 20px;
-            position: fixed;
-            height: calc(100% - 50px);
-            top: 50px;
-            left: 0;
-            overflow-y: auto;
-            color: white;
-        }
+    #translate-toggle {
+      background-color: #ffeb3b;
+      color: #000;
+      border: none;
+      padding: 8px 14px;
+      font-weight: bold;
+      border-radius: 12px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-left: auto;
+      margin-right: 10px;
+    }
 
-        .sidebar h3 {
-            color: white;
-            border-bottom: 1px solid white;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
+    #translate-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 12px #ffeb3b, 0 0 20px #ffd600;
+    }
 
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
+    #google_translate_element {
+      display: none;
+      position: absolute;
+      top: calc(15px + 40px);
+      right: 10px;
+      z-index: 1001;
+      background-color: #333;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
 
-        .sidebar ul li {
-            margin: 10px 0;
-        }
+    /* Sidebar Styles */
+    .sidebar {
+      width: 200px;
+      background-color: #333;
+      padding: 20px;
+      position: fixed;
+      top: 65px; /* Adjust top to account for the fixed header */
+      left: 0;
+      bottom: 0; /* Extend to the bottom of the viewport */
+      overflow-y: auto;
+      color: white;
+    }
 
-        .sidebar ul li a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            display: block;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
+    .sidebar h3 {
+      color: white;
+      border-bottom: 1px solid white;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
 
-        .sidebar ul li a:hover {
-            background-color: #444;
-        }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
 
-        /* Active Link Styling */
-        .sidebar ul li a.active {
-            background-color: white;
-            color: black;
-            font-weight: bold;
-            border-left: 5px solid gold;
-            padding-left: 10px;
-        }
+    .sidebar ul li {
+      margin: 10px 0;
+    }
 
-        /* Main Content Styling */
-        .main-content {
-            margin-left: 220px;
-            margin-top: 50px;
-            padding: 20px;
-            flex-grow: 1;
-        }
+    .sidebar ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 15px;
+      display: block;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
 
-        h1 {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
+    .sidebar ul li a:hover {
+      background-color: #444;
+    }
 
-        .card {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: 0 auto;
-        }
+    /* Active Link Styling */
+    .sidebar ul li a.active {
+      background-color: white;
+      color: black;
+      font-weight: bold;
+      border-left: 5px solid gold;
+      padding-left: 10px;
+    }
 
-        .card p {
-            font-size: 18px;
-            margin: 10px 0;
-        }
+    /* Main Content Styling */
+    .main-content {
+      margin-left: 220px;
+      margin-top: 70px; /* Increased top margin to be below the header */
+      padding: 20px;
+      flex-grow: 1;
+    }
 
-        .card strong {
-            font-weight: bold;
-        }
+    h1 {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
 
-        /* Media Queries for Responsiveness */
-        @media (max-width: 768px) {
-            header nav ul li {
-                margin: 0 10px;
-            }
+    .card {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      margin: 0 auto;
+    }
 
-            .sidebar {
-                width: 150px;
-            }
+    .card p {
+      font-size: 18px;
+      margin: 10px 0;
+    }
 
-            .main-content {
-                margin-left: 160px;
-            }
-        }
+    .card strong {
+      font-weight: bold;
+    }
 
-        @media (max-width: 600px) {
-            header nav ul {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 0;
-            }
+    /* Media Queries for Responsiveness */
+    @media (max-width: 768px) {
+      header nav ul {
+        gap: 8px;
+      }
+      header nav ul li a {
+        font-size: 14px;
+      }
+      .sidebar {
+        width: 150px;
+      }
+      .main-content {
+        margin-left: 170px;
+      }
+    }
 
-            header nav ul li {
-                margin: 5px 0;
-            }
-
-            .sidebar {
-                width: 100px;
-            }
-
-            .main-content {
-                margin-left: 110px;
-            }
-        }
-    </style>
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      header nav ul {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+      header nav ul li {
+        margin: 0;
+      }
+      #translate-toggle {
+        margin-left: 0;
+        margin-right: 0;
+      }
+      .sidebar {
+        width: 120px;
+        padding: 10px;
+      }
+      .sidebar h3 {
+        font-size: 18px;
+        margin-bottom: 5px;
+        padding-bottom: 5px;
+      }
+      .sidebar ul li a {
+        font-size: 14px;
+        padding: 8px 10px;
+      }
+      .main-content {
+        margin-left: 130px;
+      }
+      h1 {
+        font-size: 30px;
+      }
+      .card p {
+        font-size: 16px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Top Menu -->
-    <header>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('homepage') }}">Home</a></li>
-            <li><a href="{{ url_for('techniques') }}">Techniques</a></li>
-            <li><a href="{{ url_for('crops1') }}">Crops</a></li>
-            <li><a href="{{ url_for('crop_recommendation') }}">Crop Recommender</a></li>
-	    <li><a href="{{ url_for('scheme_list') }}">Schemes</a></li>
-	    <li><a href="{{ url_for('npk_input') }}">NPK Advisor</a></li>
-	    <li><a href="{{ url_for('disease_list') }}">Diseases</a></li>
-            </ul>
-        </nav>
-    </header>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="{{ url_for('homepage') }}">Home</a></li>
+        <li><a href="{{ url_for('techniques') }}">Techniques</a></li>
+        <li><a href="{{ url_for('crops1') }}">Crops</a></li>
+        <li><a href="{{ url_for('crop_recommendation') }}">Crop Recommender</a></li>
+        <li><a href="{{ url_for('scheme_list') }}">Schemes</a></li>
+        <li><a href="{{ url_for('npk_input') }}">NPK Advisor</a></li>
+        <li><a href="{{ url_for('disease_list') }}">Diseases</a></li>
+      </ul>
+    </nav>
+    <button id="translate-toggle" onclick="toggleTranslate()">🌐 Translate</button>
+    <div id="google_translate_element"></div>
+  </header>
 
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <h3>Other Techniques</h3>
-        <ul>
-            {% for name in technique_names %}
-                <li><a href="{{ url_for('technique_detail', technique_name=name) }}"
-                       class="{% if name == technique_name %}active{% endif %}">
-                       {{ name }}
-                </a></li>
-            {% endfor %}
-        </ul>
-    </aside>
+  <aside class="sidebar" id="sidebar">
+    <h3>Other Techniques</h3>
+    <ul>
+      {% for name in technique_names %}
+        <li><a href="{{ url_for('technique_detail', technique_name=name) }}"
+               class="{% if name == technique_name %}active{% endif %}">
+                {{ name }}
+        </a></li>
+      {% endfor %}
+    </ul>
+  </aside>
 
-    <!-- Technique Details Section -->
-    <main class="main-content">
-        <h1>Details of {{ technique_name }}</h1>
-        <div class="card">
-            <p><strong>Description:</strong> {{ technique_info['Description'] }}</p>
-            <p><strong>How it works:</strong> {{ technique_info['How it works'] }}</p>
-            <p><strong>Pros:</strong> {{ technique_info['Pros'] }}</p>
-            <p><strong>Cons:</strong> {{ technique_info['Cons'] }}</p>
-        </div>
-    </main>
+  <main class="main-content">
+    <h1>Details of {{ technique_name }}</h1>
+    <div class="card">
+      <p><strong>Description:</strong> {{ technique_info['Description'] }}</p>
+      <p><strong>How it works:</strong> {{ technique_info['How it works'] }}</p>
+      <p><strong>Pros:</strong> {{ technique_info['Pros'] }}</p>
+      <p><strong>Cons:</strong> {{ technique_info['Cons'] }}</p>
+    </div>
+  </main>
 
-    <script>
-        // Preserve Scroll Position
-        const sidebar = document.getElementById('sidebar');
-        sidebar.scrollTop = sessionStorage.getItem('sidebarScroll') || 0;
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'as,bn,doi,gu,hi,ks,kn,kok,ma,mai,ml,mr,ne,or,pa,sa,sat,sd,te,ta,ur',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+      }, 'google_translate_element');
+    }
 
-        window.addEventListener('beforeunload', () => {
-            sessionStorage.setItem('sidebarScroll', sidebar.scrollTop);
-        });
-    </script>
+    function toggleTranslate() {
+      const el = document.getElementById("google_translate_element");
+      el.style.display = (el.style.display === "none" || el.style.display === "") ? "block" : "none";
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('selectedLang');
+      if (savedLang) {
+        document.cookie = `googtrans=/en/${savedLang};path=/`;
+      }
+
+      const observer = new MutationObserver(() => {
+        const iframe = document.querySelector('iframe.goog-te-menu-frame');
+        if (iframe) {
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          const langButtons = iframeDoc.querySelectorAll('.goog-te-menu2-item span.text');
+          langButtons.forEach(button => {
+            button.addEventListener('click', () => {
+              const langCode = button.closest('tr').getAttribute('value');
+              localStorage.setItem('selectedLang', langCode);
+              document.cookie = `googtrans=/en/${langCode};path=/`;
+            });
+          });
+          observer.disconnect();
+        }
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+
+      // Preserve Scroll Position for Sidebar
+      const sidebar = document.getElementById('sidebar');
+      sidebar.scrollTop = sessionStorage.getItem('sidebarScroll') || 0;
+    });
+
+    window.addEventListener('beforeunload', () => {
+      const sidebar = document.getElementById('sidebar');
+      sessionStorage.setItem('sidebarScroll', sidebar.scrollTop);
+    });
+  </script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
