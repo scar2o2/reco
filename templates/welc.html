@@ -159,6 +159,30 @@
       100% { clip-path: inset(90% 0 0 0); }
     }
 
+    /* Glowing Footer */
+    .footer {
+      position: absolute;
+      bottom: 15px;
+      right: 20px;
+      z-index: 2;
+      font-size: 1rem;
+      color: #fff;
+      opacity: 0;
+      animation: fadeIn 1.5s ease-in forwards;
+      animation-delay: 4.5s;
+      font-family: monospace;
+    }
+
+    .glow-name {
+      color: #0f0;
+      text-shadow:
+        0 0 5px #0f0,
+        0 0 10px #0f0,
+        0 0 15px #0ff,
+        0 0 20px #0ff;
+      font-weight: bold;
+    }
+
     body.fade-out {
       opacity: 0;
       transition: opacity 0.5s ease-out;
@@ -173,6 +197,9 @@
       <div class="line-bottom glitch" data-text="AgriPortal">AgriPortal</div>
       <p>Empowering Agriculture through Knowledge and Insight</p>
       <a href="{{ url_for('homepage') }}" class="enter-button">Enter the Portal</a>
+    </div>
+    <div class="footer">
+      Built by <span class="glow-name">Manoj Cherukuri</span>
     </div>
   </div>
 
