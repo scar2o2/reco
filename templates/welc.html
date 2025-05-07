@@ -98,6 +98,11 @@
       to { opacity: 1; }
     }
 
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
     @keyframes slideDown {
       from {
         opacity: 0;
@@ -181,6 +186,12 @@
         0 0 15px #0ff,
         0 0 20px #0ff;
       font-weight: bold;
+      opacity: 0;
+      display: none;
+    }
+
+    .footer-text {
+      display: inline;
     }
 
     body.fade-out {
@@ -196,14 +207,15 @@
       <div class="line-top">Welcome To</div>
       <div class="line-bottom glitch" data-text="AgriPortal">AgriPortal</div>
       <p>Empowering Agriculture through Knowledge and Insight</p>
-      <a href="{{ url_for('homepage') }}" class="enter-button">Enter the Portal</a>
+      <a href="#" class="enter-button">Enter the Portal</a>
     </div>
     <div class="footer">
-      Built by <span class="glow-name">Manoj Cherukuri</span>
+      Built by <span class="footer-text"><span class="glow-name" id="name1">Manoj Cherukuri</span><span class="glow-name" id="name2">Ravula Ramcharan</span><span class="glow-name" id="name3">Sri Charan</span></span>
     </div>
   </div>
 
   <script>
+    // For the enter button transition
     const enterBtn = document.querySelector('.enter-button');
     enterBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -211,6 +223,69 @@
       setTimeout(() => {
         window.location.href = e.target.href;
       }, 550);
+    });
+
+    // For sequential name animation
+    document.addEventListener('DOMContentLoaded', () => {
+      const names = [
+        document.getElementById('name1'),
+        document.getElementById('name2'),
+        document.getElementById('name3')
+      ];
+      
+      // Initial delay before starting name animations (after footer appears)
+      const initialDelay = 5000; // 5 seconds after page load
+      const fadeInDuration = 1500; // 1.5 seconds to fade in
+      const showDuration = 2000; // 2 seconds to display
+      const fadeOutDuration = 1000; // 1 second to fade out
+      
+      let currentNameIndex = 0;
+      
+      // Start the sequence
+      setTimeout(() => {
+        animateNextName();
+      }, initialDelay);
+      
+      function animateNextName() {
+        if (currentNameIndex >= names.length) {
+          currentNameIndex = 0; // Loop back to first name
+        }
+        
+        const currentName = names[currentNameIndex];
+        
+        // Reset display property and start fade in
+        currentName.style.display = 'inline';
+        
+        // Fade in
+        let opacity = 0;
+        const fadeInInterval = setInterval(() => {
+          opacity += 0.05;
+          currentName.style.opacity = opacity;
+          
+          if (opacity >= 1) {
+            clearInterval(fadeInInterval);
+            
+            // Keep visible for a while
+            setTimeout(() => {
+              // Fade out
+              let outOpacity = 1;
+              const fadeOutInterval = setInterval(() => {
+                outOpacity -= 0.05;
+                currentName.style.opacity = outOpacity;
+                
+                if (outOpacity <= 0) {
+                  clearInterval(fadeOutInterval);
+                  currentName.style.display = 'none';
+                  
+                  // Move to next name
+                  currentNameIndex++;
+                  setTimeout(animateNextName, 200); // Small delay between names
+                }
+              }, fadeOutDuration / 20);
+            }, showDuration);
+          }
+        }, fadeInDuration / 20);
+      }
     });
   </script>
 </body>
