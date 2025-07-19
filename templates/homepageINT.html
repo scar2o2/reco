@@ -43,6 +43,7 @@
       background-color: #111;
       text-align: center;
       padding: 20px;
+      position: relative;
     }
 
     header h1 {
@@ -50,10 +51,28 @@
       margin: 0;
     }
 
-    .translate-button {
+    .header-controls {
       position: absolute;
       top: 20px;
       right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 3;
+    }
+
+    #weather-icon {
+      font-size: 30px;
+      cursor: pointer;
+      transition: transform 0.3s, color 0.3s;
+    }
+
+    #weather-icon:hover {
+      transform: scale(1.2);
+      color: yellow;
+    }
+
+    .translate-button {
       background-color: #FFD700;
       color: #111;
       border: none;
@@ -61,7 +80,6 @@
       cursor: pointer;
       font-weight: bold;
       border-radius: 5px;
-      z-index: 3;
     }
 
     #google_translate_element {
@@ -73,6 +91,38 @@
       padding: 10px;
       border-radius: 5px;
       z-index: 3;
+    }
+
+    #weather-card {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      background: #111;
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
+      display: none;
+      z-index: 1000;
+      width: 250px;
+    }
+
+    #weather-card input {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    #weather-card button {
+      width: 100%;
+      background: yellow;
+      color: black;
+      padding: 6px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
     }
 
     main {
@@ -298,23 +348,34 @@
 <body>
 
   <div class="background-images">
-  <img src="{{ url_for('static', filename='images/peasT.png') }}" class="bg-img" style="top: 5%; left: 5%; width: 80px;">
-  <img src="{{ url_for('static', filename='images/cornT.png') }}" class="bg-img" style="top: 15%; left: 75%; width: 85px;">
-  <img src="{{ url_for('static', filename='images/cottonT.png') }}" class="bg-img" style="top: 35%; left: 15%; width: 90px;">
-  <img src="{{ url_for('static', filename='images/wheatT.png') }}" class="bg-img" style="top: 60%; left: 80%; width: 85px;">
-  <img src="{{ url_for('static', filename='images/tomatoT.png') }}" class="bg-img" style="top: 50%; left: 40%; width: 70px;">
-  <img src="{{ url_for('static', filename='images/garlicT.png') }}" class="bg-img" style="top: 25%; left: 50%; width: 75px;">
-  <img src="{{ url_for('static', filename='images/oatsT.png') }}" class="bg-img" style="top: 70%; left: 10%; width: 90px;">
-  <img src="{{ url_for('static', filename='images/chilliT.png') }}" class="bg-img" style="top: 80%; left: 60%; width: 80px;">
-  <img src="{{ url_for('static', filename='images/sugarcaneT.png') }}" class="bg-img" style="top: 85%; left: 30%; width: 100px;">
-</div>
-
+    <img src="{{ url_for('static', filename='images/peasT.png') }}" class="bg-img" style="top: 5%; left: 5%; width: 80px;">
+    <img src="{{ url_for('static', filename='images/cornT.png') }}" class="bg-img" style="top: 15%; left: 75%; width: 85px;">
+    <img src="{{ url_for('static', filename='images/cottonT.png') }}" class="bg-img" style="top: 35%; left: 15%; width: 90px;">
+    <img src="{{ url_for('static', filename='images/wheatT.png') }}" class="bg-img" style="top: 60%; left: 80%; width: 85px;">
+    <img src="{{ url_for('static', filename='images/tomatoT.png') }}" class="bg-img" style="top: 50%; left: 40%; width: 70px;">
+    <img src="{{ url_for('static', filename='images/garlicT.png') }}" class="bg-img" style="top: 25%; left: 50%; width: 75px;">
+    <img src="{{ url_for('static', filename='images/oatsT.png') }}" class="bg-img" style="top: 70%; left: 10%; width: 90px;">
+    <img src="{{ url_for('static', filename='images/chilliT.png') }}" class="bg-img" style="top: 80%; left: 60%; width: 80px;">
+    <img src="{{ url_for('static', filename='images/sugarcaneT.png') }}" class="bg-img" style="top: 85%; left: 30%; width: 100px;">
+  </div>
 
   <header>
     <h1>Welcome to the Agriculture Information Portal</h1>
-    <button class="translate-button" onclick="toggleTranslate()">Translate</button>
-    <div id="google_translate_element"></div>
+    <div class="header-controls">
+      <div id="weather-icon" title="Check Weather">🌦️</div>
+      <button class="translate-button" onclick="toggleTranslate()">Translate</button>
+      <div id="google_translate_element"></div>
+    </div>
   </header>
+
+  <!-- Weather Card (Hidden initially) -->
+  <div id="weather-card">
+    <div id="weather-form">
+      <input type="text" id="city-input" placeholder="Enter city name" />
+      <button onclick="fetchWeather()">Get Forecast</button>
+    </div>
+    <div id="weather-result"></div>
+  </div>
 
   <main>
     <div class="roadmap" id="roadmap"></div>
@@ -326,6 +387,47 @@
   </footer>
 
   <script>
+   function fetchWeather() {
+  const city = document.getElementById('city-input').value;
+  if (!city) return;
+
+  fetch('/weather', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ city: city })
+  })
+  .then(response => response.json())
+  .then(data => {
+    const resultDiv = document.getElementById('weather-result');
+    if (data.error) {
+      resultDiv.innerHTML = `<p style="color:red;">${data.error}</p>`;
+    } else {
+      // Format rainfall data
+      const currentRainfall = data.rainfall ? `${data.rainfall} mm (last ${data.rainfall_period})` : 'No recent rainfall';
+      const forecastRainfall = data.forecast_rainfall_24h ? `${data.forecast_rainfall_24h.toFixed(1)} mm expected` : 'No rainfall expected';
+      
+      resultDiv.innerHTML = `
+        <h3>${data.city}</h3>
+        <p><img src="http://openweathermap.org/img/wn/${data.icon}@2x.png"> ${data.description}</p>
+        <p>🌡️ Temperature: ${data.temperature} °C</p>
+        <p>💧 Humidity: ${data.humidity}%</p>
+        <p>🌬️ Wind: ${data.wind} m/s</p>
+        <p>🌧️ Rainfall: ${currentRainfall}</p>
+        <p>☔ 24hr Forecast: ${forecastRainfall}</p>
+      `;
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    document.getElementById('weather-result').innerHTML = `<p style="color:red;">Error fetching weather data. Please try again.</p>`;
+  });
+}
+
+    document.getElementById('weather-icon').addEventListener('click', () => {
+      const card = document.getElementById('weather-card');
+      card.style.display = (card.style.display === 'block') ? 'none' : 'block';
+    });
+
     const cardData = [
       {
         title: "Crops",
@@ -367,7 +469,7 @@
         description: "Make your soil more compatible with your crop.",
         img: "{{ url_for('static', filename='images/advisor.jpg') }}",
         link: "{{ url_for('npk_input') }}",
-        info: "Check your soil’s nitrogen, phosphorus, and potassium levels and get suggestions to optimize fertility."
+        info: "Check your soil's nitrogen, phosphorus, and potassium levels and get suggestions to optimize fertility."
       }
     ];
 
@@ -409,6 +511,20 @@
       roadmap.appendChild(point);
     });
 
+    // Add click event listeners to flip the cards
+    document.querySelectorAll('.card__button').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.stopPropagation(); // Prevent card from flipping when button is clicked
+      });
+    });
+
+    // Add flip functionality
+    document.querySelectorAll('.flip-card').forEach(card => {
+      card.addEventListener('dblclick', function() {
+        this.classList.toggle('flipped');
+      });
+    });
+
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -429,50 +545,50 @@
       });
     }
 
-   function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-      pageLanguage: 'en',
-      includedLanguages: 'as,bn,doi,gu,hi,ks,kn,kok,ma,mai,ml,mr,ne,or,pa,sa,sat,sd,te,ta,ur',
-      layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-    }, 'google_translate_element');
-  }
-
-  // Detect language change and store it
-  document.addEventListener("DOMContentLoaded", function () {
-    const selectedLang = localStorage.getItem("selected_lang");
-    if (selectedLang) {
-      setTimeout(() => {
-        const combo = document.querySelector(".goog-te-combo");
-        if (combo) {
-          combo.value = selectedLang;
-          combo.dispatchEvent(new Event("change"));
-        }
-      }, 500);
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'as,bn,doi,gu,hi,ks,kn,kok,ma,mai,ml,mr,ne,or,pa,sa,sat,sd,te,ta,ur',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+      }, 'google_translate_element');
     }
 
-    // Listen to user selection and update localStorage
-    const observer = new MutationObserver(() => {
-      const combo = document.querySelector(".goog-te-combo");
-      if (combo && !combo.dataset.listenerAttached) {
-        combo.addEventListener("change", function () {
-          localStorage.setItem("selected_lang", this.value);
-        });
-        combo.dataset.listenerAttached = "true";
+    // Detect language change and store it
+    document.addEventListener("DOMContentLoaded", function () {
+      const selectedLang = localStorage.getItem("selected_lang");
+      if (selectedLang) {
+        setTimeout(() => {
+          const combo = document.querySelector(".goog-te-combo");
+          if (combo) {
+            combo.value = selectedLang;
+            combo.dispatchEvent(new Event("change"));
+          }
+        }, 500);
       }
-    });
 
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
+      // Listen to user selection and update localStorage
+      const observer = new MutationObserver(() => {
+        const combo = document.querySelector(".goog-te-combo");
+        if (combo && !combo.dataset.listenerAttached) {
+          combo.addEventListener("change", function () {
+            localStorage.setItem("selected_lang", this.value);
+          });
+          combo.dataset.listenerAttached = "true";
+        }
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
     });
-  });
 
     function toggleTranslate() {
       const el = document.getElementById("google_translate_element");
       el.style.display = el.style.display === "none" ? "block" : "none";
     }
   </script>
- <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 </body>
 </html>
