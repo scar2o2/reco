@@ -76,7 +76,7 @@ def homepage():
 @app.route('/weather', methods=['POST'])
 def get_weather():
     city = request.json.get('city')
-    api_key = '80d2f1df7803a4ca3bc8787d4802ba79'  # Replace with your actual API key
+    api_key = ''  # Replace with your actual API key
     
     # Get current weather data
     current_url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
