@@ -1,4 +1,5 @@
 import pandas as pd
+import requests  # Added the missing import for the requests library
 from flask import Flask, render_template, request, jsonify
 import pickle
 import csv
@@ -72,7 +73,67 @@ def welc():
 def homepage():
     """Render the homepage."""
     return render_template('homepageINT.html')
+@app.route('/weather', methods=['POST'])
+def get_weather():
+    city = request.json.get('city')
+    api_key = '80d2f1df7803a4ca3bc8787d4802ba79'  # Replace with your actual API key
+    
+    # Get current weather data
+    current_url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+    
+    try:
+        response = requests.get(current_url)
+        data = response.json()
 
+        if data.get('cod') != 200:
+            return jsonify({'error': data.get('message', 'City not found')}), 404
+
+        # Basic weather info
+        weather = {
+            'city': data['name'],
+            'temperature': data['main']['temp'],
+            'description': data['weather'][0]['description'].title(),
+            'humidity': data['main']['humidity'],
+            'wind': data['wind']['speed'],
+            'icon': data['weather'][0]['icon']
+        }
+        
+        # Add rainfall data if available (OpenWeatherMap uses 'rain' with '1h' or '3h' properties for rainfall)
+        if 'rain' in data:
+            # Get rainfall in mm for the last hour if available, otherwise for the last 3 hours
+            if '1h' in data['rain']:
+                weather['rainfall'] = data['rain']['1h']
+                weather['rainfall_period'] = '1 hour'
+            elif '3h' in data['rain']:
+                weather['rainfall'] = data['rain']['3h']
+                weather['rainfall_period'] = '3 hours'
+        else:
+            weather['rainfall'] = 0
+            weather['rainfall_period'] = '1 hour'
+        
+        # Get forecast data to provide additional rainfall info
+        forecast_url = f"http://api.openweathermap.org/data/2.5/forecast?q={city}&appid={api_key}&units=metric"
+        forecast_response = requests.get(forecast_url)
+        forecast_data = forecast_response.json()
+        
+        if forecast_data.get('cod') == '200':
+            # Get rainfall forecast for next 24 hours
+            total_rain_24h = 0
+            rain_periods = 0
+            
+            for forecast in forecast_data['list'][:8]:  # First 8 periods cover about 24 hours (3 hours each)
+                if 'rain' in forecast and '3h' in forecast['rain']:
+                    total_rain_24h += forecast['rain']['3h']
+                    rain_periods += 1
+            
+            if rain_periods > 0:
+                weather['forecast_rainfall_24h'] = total_rain_24h
+            else:
+                weather['forecast_rainfall_24h'] = 0
+
+        return jsonify(weather)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 # Crop recommendation page
 @app.route('/chome')
 def crop_recommendation():
